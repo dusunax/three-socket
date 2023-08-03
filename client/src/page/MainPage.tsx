@@ -1,9 +1,9 @@
-import Chat from "../component/Chat";
+import ChatRoom from "../component/chatRoom/ChatRoom";
 
 export default function MainPage() {
   return (
     <>
-      <Chat />
+      <ChatRoom />
     </>
   );
 }
