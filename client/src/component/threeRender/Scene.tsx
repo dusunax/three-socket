@@ -1,16 +1,7 @@
 import { useRef } from "react";
-import { Mesh, Scene as ThreeScene } from "three";
+import { Scene as ThreeScene } from "three";
 
-const Box = () => {
-  const meshRef = useRef<Mesh | null>(null);
-
-  return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="yellow" />
-    </mesh>
-  );
-};
+import Box from "./Box";
 
 export default function Scene() {
   const sceneRef = useRef<ThreeScene>(null);

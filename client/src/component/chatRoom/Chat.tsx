@@ -6,8 +6,8 @@ import ChatToggleButton from "./ChatToggleButton";
 import useSocket from "../../hook/useSocket";
 
 export default function Chat() {
-  const [isChatRoom, setIsChatRoom] = useState(false);
   const { messages, sendMessage } = useSocket();
+  const [isChatRoom, setIsChatRoom] = useState(false);
 
   return (
     <>
