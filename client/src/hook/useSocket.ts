@@ -17,7 +17,7 @@ export default function useSocket() {
   const [existingIds, setExistingIds] = useState<string[]>([]);
 
   const [geoMode, setGeoMode] = useState<GeoMode>("box");
-  const knownGeometries: GeoMode[] = ["box", "sphere", "torus"];
+  const knownGeometries: GeoMode[] = ["box", "sphere", "torus", "dice"];
 
   let myId;
 

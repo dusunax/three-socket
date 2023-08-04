@@ -1,6 +1,6 @@
 import { UseSocketReturn } from "@/hook/useSocket";
 
-export type GeoMode = "box" | "sphere" | "torus";
+export type GeoMode = "box" | "sphere" | "torus" | "dice";
 
 export type ThreeProps = Pick<UseSocketReturn, "existingIds" | "geoMode">;
 
