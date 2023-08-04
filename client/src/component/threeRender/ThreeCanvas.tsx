@@ -2,15 +2,15 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
 import Scene from "./Scene";
-import { UseSocketReturn } from "@/hook/useSocket";
+import { ThreeProps } from "@/type/three";
 
-export default function ThreeCanvas({
-  existingIds,
-}: Pick<UseSocketReturn, "existingIds">) {
+export default function ThreeCanvas({ existingIds, geoMode }: ThreeProps) {
   return (
-    <Canvas>
-      <Scene existingIds={existingIds} />
-      <OrbitControls />
-    </Canvas>
+    <div className="h-screen">
+      <Canvas>
+        <Scene existingIds={existingIds} geoMode={geoMode} />
+        <OrbitControls />
+      </Canvas>
+    </div>
   );
 }

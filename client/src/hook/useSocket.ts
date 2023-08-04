@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { GeoMode } from "../type/three";
+
 import io from "socket.io-client";
 const socket = io("http://localhost:3001");
 
@@ -7,11 +9,15 @@ export type UseSocketReturn = {
   sendMessage(e: React.FormEvent<HTMLFormElement>): void;
 
   existingIds: string[];
+  geoMode: GeoMode;
 };
 
 export default function useSocket() {
   const [messages, setMessages] = useState<string[]>([]);
   const [existingIds, setExistingIds] = useState<string[]>([]);
+
+  const [geoMode, setGeoMode] = useState<GeoMode>("box");
+  const knownGeometries: GeoMode[] = ["box", "sphere", "torus"];
 
   let myId;
 
@@ -25,6 +31,15 @@ export default function useSocket() {
     if (message) {
       socket.emit("message", message);
       messageInput.value = "";
+
+      knownGeometries.map((e) => {
+        console.log(e, message.toLocaleLowerCase());
+
+        if (message.toLowerCase().includes(e)) {
+          setGeoMode(e);
+          console.log(geoMode, message);
+        }
+      });
     }
   }
 
@@ -43,15 +58,16 @@ export default function useSocket() {
       console.log("hi", existingIds);
       setExistingIds(existingIds);
 
-      // setInterval(() => {
-      //   socket.emit("update", {
-      //     t: Date.now(),
-      //     p: myObject3D.position,
-      //     r: myObject3D.rotation,
-      //   });
-      // }, 50);
+      setInterval(() => {
+        socket.emit("update", {});
+        // socket.emit("update", {
+        //   t: Date.now(),
+        //   p: myObject3D.position,
+        //   r: myObject3D.rotation,
+        // });
+      }, 50);
     });
   }, []);
 
-  return { messages, sendMessage, existingIds };
+  return { messages, sendMessage, existingIds, geoMode };
 }
