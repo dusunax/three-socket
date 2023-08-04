@@ -1,14 +1,17 @@
-import { useSocketReturn } from "@/hook/useSocket";
+import { UseSocketReturn } from "@/hook/useSocket";
 
 import ChatBubble from "./ChatBubble";
 import ChatInput from "./ChatInputBox";
 
-export default function ChatRoom({ messages, sendMessage }: useSocketReturn) {
+export default function ChatRoom({
+  messages,
+  sendMessage,
+}: Omit<UseSocketReturn, "existingIds">) {
   return (
     <div className="w-[300px] h-[400px] px-4 py-2 rounded-md fixed right-4 bottom-4 bg-slate-300 shadow-md">
       <ul id="messageList" className="h-[340px] overflow-y-scroll">
-        {messages.map((e) => (
-          <ChatBubble key={e} text={e} />
+        {messages.map((e, idx) => (
+          <ChatBubble key={e + idx} text={e} />
         ))}
       </ul>
 

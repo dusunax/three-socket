@@ -4,11 +4,11 @@ import Chat from "../component/chatRoom/Chat";
 import useSocket from "../hook/useSocket";
 
 export default function MainPage() {
-  const { messages, sendMessage } = useSocket();
+  const { messages, sendMessage, existingIds } = useSocket();
 
   return (
     <>
-      <Three />
+      <Three existingIds={existingIds} />
       <Chat messages={messages} sendMessage={sendMessage} />
     </>
   );

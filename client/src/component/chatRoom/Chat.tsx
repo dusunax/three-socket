@@ -3,9 +3,12 @@ import { useState } from "react";
 import ChatRoom from "./ChatRoom";
 import ChatToggleButton from "./ChatToggleButton";
 
-import { useSocketReturn } from "../../hook/useSocket";
+import { UseSocketReturn } from "../../hook/useSocket";
 
-export default function Chat({ messages, sendMessage }: useSocketReturn) {
+export default function Chat({
+  messages,
+  sendMessage,
+}: Omit<UseSocketReturn, "existingIds">) {
   const [isChatRoom, setIsChatRoom] = useState(false);
 
   return (
