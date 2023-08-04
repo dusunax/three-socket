@@ -55,4 +55,27 @@ src
 <img width="400" alt="image" src="https://github.com/dusunax/three-socket/assets/138760103/61e18e3e-367c-4868-9d02-79b6fe358c74">
 
 #### 3. 주사위 랜더 추가
-<img width="400" alt="image" src="https://github.com/dusunax/three-socket/assets/138760103/68aa590b-5270-4914-b094-7d7353fd6dc9">
+- map image와 normal map 사용  
+   => obj파일 load 및 mapping 이미지 수정 예정
+```tsx
+const textureLoader = new TextureLoader();
+const diceTexture = textureLoader.load("/model/die02/diff2.png");
+...
+<mesh
+  ...
+  position={[0, positionY, 0]}
+  rotation={[0, positionY % 2, 0]}
+>
+  <boxGeometry args={[1, 1, 1]} />
+  <meshPhysicalMaterial
+    color={color}
+    map={diceTexture}
+    normalMap={diceTexture2}
+    roughness={0}
+    reflectivity={1}
+    metalness={0.3}
+  />
+</mesh>
+```
+<img width="736" alt="image" src="https://github.com/dusunax/three-socket/assets/138760103/84332697-3162-471e-a33e-2cef0892ff56">
+
