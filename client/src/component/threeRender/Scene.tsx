@@ -4,6 +4,7 @@ import { Scene as ThreeScene } from "three";
 import { ThreeProps } from "@/type/three";
 import { BOX_COLORS } from "../../constant/three";
 
+import Light from "./Light";
 import Sphere from "./mesh/Sphere";
 import Torus from "./mesh/Torus";
 import ObjLoaderMesh from "./loader/ObjLoaderMesh";
@@ -16,10 +17,8 @@ export default function Scene({ existingIds, geoMode }: ThreeProps) {
   return (
     <scene ref={sceneRef}>
       <ObjLoaderMesh />
-      <ambientLight intensity={0.8} />
-      <directionalLight color="#ff0000" intensity={1} position={[5, 5, 5]} />
-      <directionalLight color="#0000ff" intensity={1} position={[0, 5, 5]} />
 
+      <Light />
       <gridHelper args={[40, 40]} position={[0, -0.49, 0]} />
       <axesHelper args={[20]} />
 
