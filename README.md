@@ -1,12 +1,15 @@
 # 🎲 three-socket 🎲
 
 3D rendering with webSocket!
+```
+typescript, react-three-fiber, socket.io, drei, leva, tailwind
+```
 
 ## 구현 목표
-- [x] three.js를 사용하여 3D 랜더링 구현
-- [x] react-three-fiber를 사용하여 3D 랜더링 구현
-- [x] webSocket을 통해 3D 랜더링 뷰포트 공유
-- [ ] webRTC을 통해 3D 랜더링 뷰포트 공유
+- [x] (#1) three.js를 사용하여 3D 랜더링 구현
+- [x] (#1) webSocket을 통해 3D 랜더링 뷰포트 공유
+- [x] (#2) react-three-fiber를 사용하여 3D 랜더링 구현
+- [ ] (#2) webRTC을 통해 3D 랜더링 뷰포트 공유
 
 ## 작업 내용
 ### 📌 three.js와 typscript를 사용하여 랜더링 구현
