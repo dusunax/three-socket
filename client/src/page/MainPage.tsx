@@ -6,13 +6,13 @@ import GeometryNavigate from "../component/geometryNavigate/GeometryNavigate";
 import UseChatRoom from "../hook/useChatRoom";
 
 export default function MainPage() {
-  const { messages, sendMessage, existingIds, geoMode, setGeoMode } =
+  const { messages, sendMessage, clientCubes, geoMode, setGeoMode, myId } =
     UseSocket();
   const { isChatRoom, setIsChatRoom } = UseChatRoom();
 
   return (
     <>
-      <ThreeCanvas existingIds={existingIds} geoMode={geoMode} />
+      <ThreeCanvas clientCubes={clientCubes} geoMode={geoMode} myId={myId} />
       {isChatRoom && (
         <GeometryNavigate geoMode={geoMode} setGeoMode={setGeoMode} />
       )}

@@ -1,4 +1,4 @@
-import { UseSocketReturn } from "@/hook/useSocket";
+import { UseSocketReturn } from "./chat";
 
 export type GeoMode = "box" | "sphere" | "torus" | "dice";
 
@@ -7,13 +7,21 @@ export type GeometryNavigateProps = Pick<
   "geoMode" | "setGeoMode"
 >;
 
-export type ThreeProps = Pick<UseSocketReturn, "existingIds" | "geoMode">;
+export type ThreeProps = Pick<
+  UseSocketReturn,
+  "clientCubes" | "geoMode" | "myId"
+>;
+
+export type MeshProps = { option: ClientGeometry };
 
 export interface ClientGeometry {
-  geomtry: GeoMode;
+  geometry: GeoMode;
   id: string;
+  name: string;
   position: { x: number; y: number; z: number };
   rotation: { x: number; y: number; z: number };
+  visible: boolean;
+  color: string;
 }
 
 export type ClientGeometryList = ClientGeometry[];

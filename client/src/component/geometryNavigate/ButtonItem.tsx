@@ -1,4 +1,4 @@
-import { UseSocketReturn } from "@/hook/useSocket";
+import { UseSocketReturn } from "../../type/chat";
 import { GeoMode } from "../../type/three";
 
 export default function ButtonItem({

@@ -1,22 +1,15 @@
-import { useRef } from "react";
-import { Mesh } from "three";
+import { MeshProps } from "@/type/three";
 
-type BoxProps = {
-  color?: string;
-  positionY?: number;
-};
-
-export default function Box({ color = "yellow", positionY = 0 }: BoxProps) {
-  const meshRef = useRef<Mesh | null>(null);
+export default function Box({ option }: MeshProps) {
+  const { position, rotation, color } = option;
 
   return (
     <mesh
-      ref={meshRef}
-      position={[0, positionY, 0]}
-      rotation={[0, positionY % 2, 0]}
+      position={[position.x, position.y, position.z]}
+      rotation={[rotation.x, rotation.y, rotation.z]}
     >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={color} />
+      <meshPhysicalMaterial color={color} />
     </mesh>
   );
 }

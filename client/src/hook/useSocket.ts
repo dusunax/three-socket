@@ -1,27 +1,19 @@
 import { useEffect, useState, useRef } from "react";
 
-import { GeoMode } from "../type/three";
+import { ClientGeometry, GeoMode } from "../type/three";
 import { GEOMETRIES } from "../constant/three";
 
 import io from "socket.io-client";
+import { UseSocketReturn } from "@/type/chat";
 const socket = io("http://localhost:3001");
 
-export type UseSocketReturn = {
-  messages: string[];
-  sendMessage(e: React.FormEvent<HTMLFormElement>): void;
-
-  existingIds: string[];
-  geoMode: GeoMode;
-  setGeoMode: React.Dispatch<React.SetStateAction<GeoMode>>;
-};
-
 export default function UseSocket() {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [existingIds, setExistingIds] = useState<string[]>([]);
-
+  const [messages, setMessages] = useState<UseSocketReturn["messages"]>([]);
+  const [clientCubes, setClientCubes] = useState<ClientGeometry[]>([]);
   const [geoMode, setGeoMode] = useState<GeoMode>("dice");
 
   let myId = useRef<string | null>(null);
+  let myMesh = useRef<ClientGeometry | null>(null);
 
   function sendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,17 +38,23 @@ export default function UseSocket() {
   useEffect(() => {
     socket.on("connect", () => {
       myId.current = socket.id;
-      console.log("Connected to server: ", myId);
+
+      console.log("Connected to server: ", socket.id);
       socket.emit("id", myId);
     });
 
-    socket.on("message", (messages: string[]) => {
+    socket.on("message", (messages: UseSocketReturn["messages"]) => {
       setMessages(messages);
     });
 
-    socket.on("idsChange", (existingIds) => {
-      console.log("hi", existingIds);
-      setExistingIds(existingIds);
+    socket.on("idChange", (clientCubes) => {
+      setClientCubes(clientCubes);
+      myMesh.current = clientCubes.find(
+        (cube: ClientGeometry) => cube.id === myId.current
+      );
+
+      console.log("hi", clientCubes);
+      console.log(myMesh.current);
 
       setInterval(() => {
         socket.emit("update", {});
@@ -69,5 +67,12 @@ export default function UseSocket() {
     });
   }, []);
 
-  return { messages, sendMessage, existingIds, geoMode, setGeoMode };
+  return {
+    messages,
+    sendMessage,
+    clientCubes,
+    geoMode,
+    setGeoMode,
+    myId,
+  };
 }

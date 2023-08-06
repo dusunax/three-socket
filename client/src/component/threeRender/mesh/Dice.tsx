@@ -1,12 +1,10 @@
 import { useRef } from "react";
 import { Mesh, TextureLoader } from "three";
 
-type BoxProps = {
-  color?: string;
-  positionY?: number;
-};
+import { MeshProps } from "@/type/three";
 
-export default function Dice({ color = "yellow", positionY = 0 }: BoxProps) {
+export default function Dice({ option }: MeshProps) {
+  const { position, rotation, color } = option;
   const meshRef = useRef<Mesh | null>(null);
 
   // TextureLoader를 사용하여 주사위 이미지를 로드합니다.
@@ -27,8 +25,10 @@ export default function Dice({ color = "yellow", positionY = 0 }: BoxProps) {
   return (
     <mesh
       ref={meshRef}
-      position={[0, positionY, 0]}
-      rotation={[0, positionY % 2, 0]}
+      position={[position.x, position.y, position.z]}
+      rotation={[rotation.x, rotation.y, rotation.z]}
+      castShadow
+      receiveShadow
     >
       <boxGeometry args={[1, 1, 1]} />
       <meshPhysicalMaterial
