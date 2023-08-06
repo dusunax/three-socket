@@ -52,20 +52,31 @@ export default function UseSocket() {
       myMesh.current = clientCubes.find(
         (cube: ClientGeometry) => cube.id === myId.current
       );
-
-      console.log("hi", clientCubes);
-      console.log(myMesh.current);
-
-      setInterval(() => {
-        socket.emit("update", {});
-        // socket.emit("update", {
-        //   t: Date.now(),
-        //   p: myObject3D.position,
-        //   r: myObject3D.rotation,
-        // });
-      }, 50);
     });
   }, []);
+
+  useEffect(() => {
+    function updateCurrentClientGeoMode() {
+      console.log("인터벌", geoMode);
+
+      if (myMesh.current) {
+        socket.emit("update", {
+          id: myId.current,
+          geometry: geoMode,
+          position: myMesh.current.position,
+          rotation: myMesh.current.rotation,
+        });
+      }
+    }
+
+    const updateInterval = setInterval(() => {
+      updateCurrentClientGeoMode();
+    }, 500);
+
+    return () => {
+      clearInterval(updateInterval);
+    };
+  }, [geoMode]);
 
   return {
     messages,

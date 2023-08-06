@@ -41,24 +41,23 @@ const DEFAULT_OPTION = {
 io.on("connection", (socket) => {
   socket.on("id", (newId) => {
     clientId = newId.current;
-    clientName = newId.name;
+    clientName = DEFAULT_GEOMETRY + colorCount;
+
+    // 접속 id
     console.log("connect: ", clientId);
 
-    // if (!existingIds.has(clientId)) {
     existingIds.add(clientId);
     const length = clientCubes.length;
-    console.log(length, clientCubes);
 
     clientCubes.unshift({
       ...DEFAULT_OPTION,
       position: { ...DEFAULT_OPTION.position, y: length },
       rotation: { ...DEFAULT_OPTION.rotation, y: length % 2 },
       id: clientId,
-      name: DEFAULT_GEOMETRY + colorCount,
+      name: clientName,
       color: BOX_COLORS[colorCount % BOX_COLORS.length],
     });
     colorCount++;
-    // }
 
     io.emit("idChange", clientCubes);
   });
@@ -70,6 +69,25 @@ io.on("connection", (socket) => {
 
     // 모든 클라이언트에게 메시지 전송
     io.emit("message", messages);
+  });
+
+  // 클라이언트가 업데이트 이벤트를 보냈을 때
+  socket.on("update", (data) => {
+    const { id, geometry, position, rotation } = data;
+
+    // 해당 클라이언트의 정보 업데이트
+    const updatedClient = clientCubes.find((cube) => cube.id === id);
+
+    if (updatedClient) {
+      clientName = geometry + colorCount;
+      updatedClient.name = clientName;
+      updatedClient.geometry = geometry;
+      updatedClient.position = position;
+      updatedClient.rotation = rotation;
+    }
+
+    // 모든 클라이언트에게 업데이트된 클라이언트 정보 브로드캐스팅
+    io.emit("idChange", clientCubes);
   });
 
   socket.on("disconnect", () => {
