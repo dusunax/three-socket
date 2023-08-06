@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 
 import { GeoMode } from "../type/three";
-import { GEMETRIES } from "../constant/three";
+import { GEOMETRIES } from "../constant/three";
 
 import io from "socket.io-client";
 const socket = io("http://localhost:3001");
@@ -12,6 +12,7 @@ export type UseSocketReturn = {
 
   existingIds: string[];
   geoMode: GeoMode;
+  setGeoMode: React.Dispatch<React.SetStateAction<GeoMode>>;
 };
 
 export default function UseSocket() {
@@ -33,7 +34,7 @@ export default function UseSocket() {
       socket.emit("message", message);
       messageInput.value = "";
 
-      GEMETRIES.forEach((e) => {
+      GEOMETRIES.forEach((e) => {
         if (message.toLowerCase().includes(e)) {
           setGeoMode(e);
           console.log(geoMode, message);
@@ -68,5 +69,5 @@ export default function UseSocket() {
     });
   }, []);
 
-  return { messages, sendMessage, existingIds, geoMode };
+  return { messages, sendMessage, existingIds, geoMode, setGeoMode };
 }

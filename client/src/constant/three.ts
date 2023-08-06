@@ -1,6 +1,6 @@
 import { ClientGeometry, GeoMode } from "@/type/three";
 
-export const GEMETRIES: GeoMode[] = ["box", "sphere", "torus", "dice"];
+export const GEOMETRIES: GeoMode[] = ["box", "sphere", "torus", "dice"];
 export const BOX_COLORS = ["red", "green", "blue"];
 
 export const DEFAULT_GEOMETRY: ClientGeometry = {

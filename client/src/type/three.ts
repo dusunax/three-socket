@@ -2,7 +2,10 @@ import { UseSocketReturn } from "@/hook/useSocket";
 
 export type GeoMode = "box" | "sphere" | "torus" | "dice";
 
-export type GeometryNavigateProps = Pick<UseSocketReturn, "geoMode">;
+export type GeometryNavigateProps = Pick<
+  UseSocketReturn,
+  "geoMode" | "setGeoMode"
+>;
 
 export type ThreeProps = Pick<UseSocketReturn, "existingIds" | "geoMode">;
 
