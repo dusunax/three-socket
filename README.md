@@ -4,7 +4,7 @@
 
 ## 구현 목표
 - [x] three.js를 사용하여 3D 랜더링 구현
-- [ ] react-three-fiber를 사용하여 3D 랜더링 구현
+- [x] react-three-fiber를 사용하여 3D 랜더링 구현
 - [x] webSocket을 통해 3D 랜더링 뷰포트 공유
 - [ ] webRTC을 통해 3D 랜더링 뷰포트 공유
 
@@ -77,5 +77,12 @@ const diceTexture = textureLoader.load("/model/die02/diff2.png");
   />
 </mesh>
 ```
-<img width="736" alt="image" src="https://github.com/dusunax/three-socket/assets/138760103/84332697-3162-471e-a33e-2cef0892ff56">
+<img width="500" alt="image" src="https://github.com/dusunax/three-socket/assets/138760103/84332697-3162-471e-a33e-2cef0892ff56">
 
+### 📌 8월 5일 작업
+- icon & mesh type tag button 추가
+- leva gui 추가 (clientMesh의 position과 rotation 작업 필요)
+- 서버에 현재 clientMesh의 geometry Mode 전달, emit update to socket.io
+- 채팅방에 name 추가
+
+![chrome-capture-2023-7-6_2](https://github.com/dusunax/three-socket/assets/94776135/888868b8-ae25-48dd-9d32-0a6fea74cc37)
