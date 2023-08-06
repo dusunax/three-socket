@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+
 import { GeoMode } from "../type/three";
+import { GEMETRIES } from "../constant/three";
 
 import io from "socket.io-client";
 const socket = io("http://localhost:3001");
@@ -12,14 +14,13 @@ export type UseSocketReturn = {
   geoMode: GeoMode;
 };
 
-export default function useSocket() {
+export default function UseSocket() {
   const [messages, setMessages] = useState<string[]>([]);
   const [existingIds, setExistingIds] = useState<string[]>([]);
 
-  const [geoMode, setGeoMode] = useState<GeoMode>("box");
-  const knownGeometries: GeoMode[] = ["box", "sphere", "torus", "dice"];
+  const [geoMode, setGeoMode] = useState<GeoMode>("dice");
 
-  let myId;
+  let myId = useRef<string | null>(null);
 
   function sendMessage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,9 +33,7 @@ export default function useSocket() {
       socket.emit("message", message);
       messageInput.value = "";
 
-      knownGeometries.map((e) => {
-        console.log(e, message.toLocaleLowerCase());
-
+      GEMETRIES.forEach((e) => {
         if (message.toLowerCase().includes(e)) {
           setGeoMode(e);
           console.log(geoMode, message);
@@ -45,7 +44,7 @@ export default function useSocket() {
 
   useEffect(() => {
     socket.on("connect", () => {
-      myId = socket.id;
+      myId.current = socket.id;
       console.log("Connected to server: ", myId);
       socket.emit("id", myId);
     });

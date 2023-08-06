@@ -26,7 +26,6 @@ export default function Dice({ color = "yellow", positionY = 0 }: BoxProps) {
 
   return (
     <mesh
-      castShadow
       ref={meshRef}
       position={[0, positionY, 0]}
       rotation={[0, positionY % 2, 0]}
@@ -38,7 +37,7 @@ export default function Dice({ color = "yellow", positionY = 0 }: BoxProps) {
         normalMap={diceTexture2}
         roughness={0}
         reflectivity={1}
-        metalness={0.8}
+        metalness={0.1}
       />
     </mesh>
   );
