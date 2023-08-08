@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import MainPage from "./MainPage";
+import EnterRoomPage from "./EnterRoomPage";
 
 const router = createBrowserRouter([
   {
@@ -8,8 +9,8 @@ const router = createBrowserRouter([
     element: <MainPage />,
   },
   {
-    path: "about",
-    element: <div>hello About</div>,
+    path: "enter",
+    element: <EnterRoomPage />,
   },
 ]);
 
