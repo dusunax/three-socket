@@ -2,7 +2,7 @@ export default function Input({
   name,
   placeholder,
   autoFocus,
-  value = "익명",
+  value = "",
 }: {
   name: string;
   placeholder: string;
