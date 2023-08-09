@@ -1,12 +1,12 @@
 import ChatBubble from "./ChatBubble";
 import ChatInput from "./ChatInputBox";
 
-import { ChatProps } from "../../type/chat";
+import { UseChatRoomProps } from "../../type/chat";
 
-const RoomIdCopyButton = ({ chatRoomId }: { chatRoomId: string }) => {
+const RoomIdCopyButton = ({ currentRoomId }: { currentRoomId: string }) => {
   const copyRoomID = async () => {
     try {
-      await window.navigator.clipboard.writeText(chatRoomId);
+      await window.navigator.clipboard.writeText(currentRoomId);
       alert("복사되었습니다.");
     } catch (error) {
       console.error("복사 중 오류 발생:", error);
@@ -15,27 +15,38 @@ const RoomIdCopyButton = ({ chatRoomId }: { chatRoomId: string }) => {
 
   return (
     <h3
-      className="mt-4 px-2 py-1 absolute rounded-lg bg-white cursor-pointer text-sm text-center"
+      className="w-[80%] mt-12 px-2 py-1 absolute rounded-lg bg-white cursor-pointer text-sm text-center"
       onClick={copyRoomID}
     >
-      <span id="roomID">{chatRoomId}</span> 복사하기
+      <span id="roomID">{currentRoomId}</span> 복사하기
     </h3>
   );
 };
 
-export default function ChatRoom({
-  messages,
-  sendMessage,
-  chatRoomId,
-}: ChatProps) {
-  return (
-    <div className="w-[300px] h-[400px] px-4 py-2 rounded-md fixed right-4 bottom-4 bg-slate-300 shadow-md">
-      <RoomIdCopyButton chatRoomId={chatRoomId} />
+export default function ChatRoom({ ...props }: UseChatRoomProps) {
+  const { messages, sendMessage, currentRoomId } = props;
+  const title = localStorage.getItem("title");
 
-      <ul id="messageList" className="h-[340px] overflow-y-scroll">
-        {messages.map((e, idx) => (
-          <ChatBubble key={e.name + "" + idx} text={`${e.name}: ${e.text}`} />
-        ))}
+  return (
+    <div className="w-[40%] h-[500px] px-6 py-4 rounded-md fixed flex flex-col right-4 bottom-4 bg-slate-300 shadow-md">
+      <RoomIdCopyButton currentRoomId={currentRoomId} />
+
+      <h3 className="text-xl translate-y-2">{title}</h3>
+
+      <ul
+        id="messageList"
+        className="flex-1 mt-20 overflow-y-scroll scroll-mb-2"
+      >
+        {messages.map((e, idx) => {
+          const isMyChat = true;
+          return (
+            <ChatBubble
+              key={e.nickname + "" + idx}
+              text={`${e.nickname}: ${e.message}`}
+              isMyChat={isMyChat}
+            />
+          );
+        })}
       </ul>
 
       <ChatInput sendMessage={sendMessage} />

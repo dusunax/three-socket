@@ -1,24 +1,23 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stats } from "@react-three/drei";
 
-import { ThreeProps } from "@/type/three";
 import UseGuiControl from "../../hook/useGuiControl";
+import { UseChatRoomProps } from "@/type/chat";
+import UseSocketRender from "../../hook/useSocketRender";
 
 import Scene from "./Scene";
 import Light from "./Light";
 
-export default function ThreeCanvas({
-  clientCubes,
-  geoMode,
-  myId,
-}: ThreeProps) {
+export default function ThreeCanvas({ ...props }: UseChatRoomProps) {
+  const { myId, clientCubes } = UseSocketRender();
   const { ambientRef } = UseGuiControl();
+  const { mode } = props;
 
   return (
     <div className="h-screen">
       <Canvas camera={{ position: [2, 2, 1.5] }}>
         <Light ambientRef={ambientRef} />
-        <Scene clientCubes={clientCubes} geoMode={geoMode} myId={myId} />
+        <Scene clientCubes={clientCubes} mode={mode} myId={myId} />
         <OrbitControls />
 
         {/* helpers & utils */}

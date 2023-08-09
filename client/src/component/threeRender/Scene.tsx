@@ -7,14 +7,14 @@ import Dice from "./mesh/Dice";
 
 import { ThreeProps } from "@/type/three";
 
-export default function Scene({ clientCubes, geoMode, myId }: ThreeProps) {
+export default function Scene({ clientCubes, mode, myId }: ThreeProps) {
   return (
     <scene>
       {clientCubes.map((currentMesh, idx) => {
         const { id } = currentMesh;
         const isMyMesh = id === myId;
 
-        switch (isMyMesh ? geoMode : currentMesh.geometry) {
+        switch (isMyMesh ? mode : currentMesh.geometry) {
           case "box":
             return <Box key={id + idx} option={currentMesh} />;
           case "dice":

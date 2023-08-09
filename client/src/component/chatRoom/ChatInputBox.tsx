@@ -1,15 +1,22 @@
-type ChatInputProps = {
-  sendMessage: (e: React.FormEvent<HTMLFormElement>) => void;
-};
+import { UseChatRoomProps } from "@/type/chat";
 
-export default function ChatInput({ sendMessage }: ChatInputProps) {
+export default function ChatInput({
+  sendMessage,
+}: Pick<UseChatRoomProps, "sendMessage">) {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const messageInput = e.currentTarget[0] as HTMLInputElement;
+    sendMessage(messageInput.value);
+  };
+
   return (
-    <form onSubmit={(e) => sendMessage(e)}>
+    <form className="flex" onSubmit={(e) => onSubmit(e)}>
       <input
         type="text"
         name="message"
         id="messageInput"
-        className="p-2 outline-none rounded-l"
+        className="flex-1 p-2 outline-none rounded-lg"
         placeholder="메시지를 입력하세요"
         autoFocus
         autoComplete="off"

@@ -1,18 +1,39 @@
-import { ClientGeometry, GeoMode } from "./three";
+import { ClientGeometry, GeometryMode } from "./three";
 
-export type UseSocketReturn = {
-  messages: { name: Text; text: string }[];
-  sendMessage(e: React.FormEvent<HTMLFormElement>): void;
+export interface RoomInfo {
+  id: string;
+  title: string;
+  nickname: string;
+}
 
-  existingIds: string[];
-  clientCubes: ClientGeometry[];
-  geoMode: GeoMode;
-  setGeoMode: React.Dispatch<React.SetStateAction<GeoMode>>;
+export interface UseSocketProps {
   myId: string;
-  chatRoomId: string;
+  clientCubes: ClientGeometry[];
+  initializeCube: (id: string) => void;
+}
+
+export interface message {
+  message: string;
+  nickname: string;
+  time: string;
+  roomId: string;
+}
+
+export type UseChatRoomProps = {
+  currentRoomId: string;
+  messages: message[];
+
+  mode: GeometryMode;
+  setMode: React.Dispatch<React.SetStateAction<GeometryMode>>;
+  isChatRoom: boolean;
+  setIsChatRoom: React.Dispatch<React.SetStateAction<boolean>>;
+
+  sendMessage: (message: string) => void;
+  createRoom: (title: string, nickname: string) => void;
+  joinRoom: (roomId: string, nickname: string) => void;
 };
 
 export type ChatProps = Pick<
-  UseSocketReturn,
-  "messages" | "sendMessage" | "chatRoomId"
+  UseChatRoomProps,
+  "messages" | "sendMessage" | "currentRoomId"
 >;

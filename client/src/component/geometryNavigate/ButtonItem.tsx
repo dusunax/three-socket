@@ -1,21 +1,21 @@
-import { UseSocketReturn } from "../../type/chat";
-import { GeoMode } from "../../type/three";
+import { UseChatRoomProps } from "../../type/chat";
+import { GeometryMode } from "../../type/three";
 
 export default function ButtonItem({
   meshType,
   isActive,
-  setGeoMode,
+  setMode,
 }: {
-  meshType: GeoMode;
+  meshType: GeometryMode;
   isActive: boolean;
-  setGeoMode: UseSocketReturn["setGeoMode"];
+  setMode: UseChatRoomProps["setMode"];
 }) {
   return (
     <li
       className={`px-2 py-1 text-xs text-white rounded-full cursor-pointer ${
         isActive ? "bg-lime-600" : "bg-slate-500"
       }`}
-      onClick={() => setGeoMode(meshType)}
+      onClick={() => setMode(meshType)}
     >
       #{meshType}
     </li>

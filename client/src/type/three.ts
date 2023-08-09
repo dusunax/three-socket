@@ -1,21 +1,16 @@
-import { UseSocketReturn } from "./chat";
+import { UseChatRoomProps, UseSocketProps } from "./chat";
 
-export type GeoMode = "box" | "sphere" | "torus" | "dice";
+export type GeometryMode = "box" | "sphere" | "torus" | "dice";
 
-export type GeometryNavigateProps = Pick<
-  UseSocketReturn,
-  "geoMode" | "setGeoMode"
->;
+export type GeometryNavigateProps = Pick<UseChatRoomProps, "mode" | "setMode">;
 
-export type ThreeProps = Pick<
-  UseSocketReturn,
-  "clientCubes" | "geoMode" | "myId"
->;
+export type ThreeProps = Pick<UseChatRoomProps, "mode"> &
+  Pick<UseSocketProps, "clientCubes" | "myId">;
 
 export type MeshProps = { option: ClientGeometry };
 
 export interface ClientGeometry {
-  geometry: GeoMode;
+  geometry: GeometryMode;
   id: string;
   name: string;
   position: { x: number; y: number; z: number };

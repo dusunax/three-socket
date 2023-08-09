@@ -1,5 +1,3 @@
-import { FormEvent } from "react";
-
 import CenterYWrapper from "../wrapper/CenterYWrapper";
 import Card from "../../component/element/Card";
 import Input from "../../component/element/Input";
@@ -9,9 +7,22 @@ import Button from "../element/Button";
 import Title from "../element/Title";
 import GoBackButton from "../element/GoBackButton";
 
+import UseChatRoom from "../../hook/useChatRoom";
+
 export default function EnterRoom() {
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const { joinRoom } = UseChatRoom();
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const roomIdInput = form.elements.namedItem("room-id") as HTMLInputElement;
+    const nicknameInput = form.elements.namedItem(
+      "nickname"
+    ) as HTMLInputElement;
+
+    if (roomIdInput && nicknameInput) {
+      joinRoom(roomIdInput.value, nicknameInput.value);
+    }
   };
 
   return (
@@ -27,14 +38,14 @@ export default function EnterRoom() {
 
         <form onSubmit={(e) => onSubmit(e)} className="text-center mt-20">
           <InputRow>
-            <Label htmlFor="room">Room ID Code</Label>
-            <Input name="room" autoFocus={true} placeholder="방 ID 코드" />
+            <Label htmlFor="room-id">Room ID Code</Label>
+            <Input name="room-id" autoFocus={true} placeholder="방 ID 코드" />
           </InputRow>
 
           <InputRow>
-            <Label htmlFor="name">nickname</Label>
+            <Label htmlFor="nickname">nickname</Label>
             <Input
-              name="name"
+              name="nickname"
               autoFocus={false}
               placeholder="닉네임"
               value="익명"

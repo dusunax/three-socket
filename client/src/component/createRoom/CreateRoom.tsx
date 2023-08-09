@@ -11,6 +11,19 @@ import UseChatRoom from "../../hook/useChatRoom";
 export default function CreateRoom() {
   const { createRoom } = UseChatRoom();
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const titleInput = form.elements.namedItem("title") as HTMLInputElement;
+    const nicknameInput = form.elements.namedItem(
+      "nickname"
+    ) as HTMLInputElement;
+
+    if (titleInput && nicknameInput) {
+      createRoom(titleInput.value, nicknameInput.value);
+    }
+  };
+
   return (
     <CenterYWrapper>
       <Card>
@@ -23,7 +36,7 @@ export default function CreateRoom() {
           create
         </h3>
 
-        <form onSubmit={(e) => createRoom(e)} className="text-center mt-20">
+        <form onSubmit={(e) => onSubmit(e)} className="text-center mt-20">
           <InputRow>
             <Label htmlFor="title">Room name</Label>
             <Input name="title" autoFocus={true} placeholder="방 이름" />

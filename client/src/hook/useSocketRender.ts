@@ -8,7 +8,8 @@ const socket = io("http://localhost:3001");
 
 /**
  * 실시간 3D 랜더링에 관련된 로직을 처리하는 커스텀 훅
- *
+ * - geometry 변경
+ * - clientCubes 업데이트
  */
 export default function UseSocketRender() {
   const [params, setParams] = useSearchParams();
@@ -22,10 +23,6 @@ export default function UseSocketRender() {
   }
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to server: ", socket.id);
-    });
-
     initializeCube(socket.id);
 
     socket.on("idChange", (clientCubes) => {
@@ -37,10 +34,6 @@ export default function UseSocketRender() {
       myMesh.current = clientCubes.find(
         (cube: ClientGeometry) => cube.id === socket.id
       );
-    });
-
-    socket.on("roomCreated", (id: string) => {
-      console.log("roomCreated", id);
     });
   }, [socket.id]);
 
