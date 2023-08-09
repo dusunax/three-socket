@@ -15,7 +15,7 @@ const RoomIdCopyButton = ({ currentRoomId }: { currentRoomId: string }) => {
 
   return (
     <h3
-      className="w-[80%] mt-12 px-2 py-1 absolute rounded-lg bg-white cursor-pointer text-sm text-center"
+      className="sm:w-full sm:mx-auto px-5 py-2 mt-2 rounded-lg bg-white cursor-pointer text-xs text-center"
       onClick={copyRoomID}
     >
       <span id="roomID">{currentRoomId}</span> 복사하기
@@ -27,15 +27,18 @@ export default function ChatRoom({ ...props }: UseChatRoomProps) {
   const { messages, sendMessage, currentRoomId } = props;
   const title = localStorage.getItem("title");
 
-  return (
-    <div className="w-[40%] h-[500px] px-6 py-4 rounded-md fixed flex flex-col right-4 bottom-4 bg-slate-300 shadow-md">
-      <RoomIdCopyButton currentRoomId={currentRoomId} />
+  const mobileCSS = `w-full h-full right-0 bottom-10 pb-6 pt-[100px] rounded-none `;
 
-      <h3 className="text-xl translate-y-2">{title}</h3>
+  return (
+    <div
+      className={`${mobileCSS} sm:w-[40%] sm:h-[500px] px-6 sm:py-4 sm:rounded-md fixed flex flex-col sm:right-4 sm:bottom-4 bg-slate-300 shadow-md`}
+    >
+      <h3 className="text-xl ">{title}</h3>
+      <RoomIdCopyButton currentRoomId={currentRoomId} />
 
       <ul
         id="messageList"
-        className="flex-1 mt-20 overflow-y-scroll scroll-mb-2"
+        className="flex-1 mt-2 overflow-y-scroll scroll-mb-2"
       >
         {messages.map((e, idx) => {
           const isMyChat = true;

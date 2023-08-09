@@ -27,7 +27,10 @@ export default function CreateRoom() {
   return (
     <CenterYWrapper>
       <Card>
-        <GoBackButton />
+        <div className="row flex mb-10">
+          <GoBackButton />
+        </div>
+
         <Title text="Create Room" />
 
         <h3 className="text-xl">
@@ -36,7 +39,10 @@ export default function CreateRoom() {
           create
         </h3>
 
-        <form onSubmit={(e) => onSubmit(e)} className="text-center mt-20">
+        <form
+          onSubmit={(e) => onSubmit(e)}
+          className="text-center mt-10 sm:mt-20"
+        >
           <InputRow>
             <Label htmlFor="title">Room name</Label>
             <Input name="title" autoFocus={true} placeholder="방 이름" />

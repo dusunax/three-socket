@@ -7,9 +7,9 @@ export default function GoBackButton() {
   return (
     <div
       onClick={() => navigate(-1)}
-      className="cursor-pointer hover:-translate-y-2 transition-transform p-2"
+      className="cursor-pointer hover:-translate-y-2 transition-transform p-2 pl-3"
     >
-      <MdArrowBackIos size={20} />
+      <MdArrowBackIos width={20} />
     </div>
   );
 }

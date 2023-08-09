@@ -1,5 +1,3 @@
-import { Dispatch } from "react";
-
 import ChatRoom from "./ChatRoom";
 import ChatToggleButton from "./ChatToggleButton";
 
