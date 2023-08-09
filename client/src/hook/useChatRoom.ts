@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 
+import io from "socket.io-client";
+const socket = io("http://localhost:3001");
+
 export default function UseChatRoom() {
   const [isChatRoom, setIsChatRoom] = useState(false);
 
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      // esc 키가 눌렸을 때 isChatRoom 값을 토글
-      if (event.keyCode === 27) {
-        setIsChatRoom((prevIsChatRoom) => !prevIsChatRoom);
-      }
-    }
+  console.log("hi", socket.id);
+  socket.emit("hello", "hello");
 
+  function handleKeyDown(event: KeyboardEvent) {
+    // esc 키가 눌렸을 때 isChatRoom 값을 토글
+    if (event.keyCode === 27) {
+      setIsChatRoom((prevIsChatRoom) => !prevIsChatRoom);
+    }
+  }
+
+  useEffect(() => {
     // 이벤트 리스너 등록
     document.addEventListener("keydown", handleKeyDown);
 

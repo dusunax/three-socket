@@ -4,11 +4,25 @@ import Chat from "../component/chatRoom/Chat";
 import UseSocket from "../hook/useSocket";
 import GeometryNavigate from "../component/geometryNavigate/GeometryNavigate";
 import UseChatRoom from "../hook/useChatRoom";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 export default function RoomPage() {
-  const { messages, sendMessage, clientCubes, geoMode, setGeoMode, myId } =
-    UseSocket();
+  const {
+    messages,
+    sendMessage,
+    clientCubes,
+    geoMode,
+    setGeoMode,
+    myId,
+    initializeCube,
+  } = UseSocket();
   const { isChatRoom, setIsChatRoom } = UseChatRoom();
+  const { id } = useParams();
+
+  useEffect(() => {
+    id && initializeCube(id);
+  }, []);
 
   return (
     <>

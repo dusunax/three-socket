@@ -8,10 +8,12 @@ import Label from "../../component/element/Label";
 import Title from "../element/Title";
 import GoBackButton from "../element/GoBackButton";
 
+import UseSocket from "../../hook/useSocket";
+import UseChatRoom from "../../hook/useChatRoom";
+
 export default function CreateRoom() {
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  };
+  const { createRoom } = UseSocket();
+  const { isChatRoom } = UseChatRoom();
 
   return (
     <CenterYWrapper>
@@ -25,16 +27,16 @@ export default function CreateRoom() {
           create
         </h3>
 
-        <form onSubmit={(e) => onSubmit(e)} className="text-center mt-20">
+        <form onSubmit={(e) => createRoom(e)} className="text-center mt-20">
           <InputRow>
-            <Label htmlFor="room">Room name</Label>
-            <Input name="room" autoFocus={true} placeholder="방 이름" />
+            <Label htmlFor="title">Room name</Label>
+            <Input name="title" autoFocus={true} placeholder="방 이름" />
           </InputRow>
 
           <InputRow>
-            <Label htmlFor="name">nickname</Label>
+            <Label htmlFor="nickname">nickname</Label>
             <Input
-              name="name"
+              name="nickname"
               autoFocus={false}
               placeholder="닉네임"
               value="익명"

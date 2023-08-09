@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require("uuid");
+
 const express = require("express");
 const app = express();
 
@@ -5,6 +7,7 @@ const cors = require("cors");
 app.use(cors());
 
 const http = require("http");
+const { log } = require("console");
 
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
@@ -39,12 +42,12 @@ const DEFAULT_OPTION = {
 
 // 새로운 클라이언트가 접속했을 때
 io.on("connection", (socket) => {
-  socket.on("id", (newId) => {
+  socket.on("newCube", (newId) => {
     clientId = newId.current;
     clientName = DEFAULT_GEOMETRY + colorCount;
 
     // 접속 id
-    console.log("connect: ", clientId);
+    console.log("connect newCube: ", clientId);
 
     existingIds.add(clientId);
     const length = clientCubes.length;
@@ -88,6 +91,21 @@ io.on("connection", (socket) => {
 
     // 모든 클라이언트에게 업데이트된 클라이언트 정보 브로드캐스팅
     io.emit("idChange", clientCubes);
+  });
+
+  socket.on("createRoom", (roomName) => {
+    const roomId = uuidv4();
+    socket.join(roomId);
+
+    console.log("새로운 방이 생성되었습니다. ID:", roomId);
+    // 클라이언트에게 생성된 방의 ID를 전달합니다.
+    socket.emit("roomCreated", roomId);
+
+    console.log("createRoom: ", roomName);
+  });
+
+  socket.on("hello", (data) => {
+    console.log(data);
   });
 
   socket.on("disconnect", () => {
