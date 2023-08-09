@@ -1,5 +1,3 @@
-import { FormEvent } from "react";
-
 import CenterYWrapper from "../wrapper/CenterYWrapper";
 import Card from "../../component/element/Card";
 import Input from "../../component/element/Input";
@@ -8,12 +6,10 @@ import Label from "../../component/element/Label";
 import Title from "../element/Title";
 import GoBackButton from "../element/GoBackButton";
 
-import UseSocket from "../../hook/useSocket";
 import UseChatRoom from "../../hook/useChatRoom";
 
 export default function CreateRoom() {
-  const { createRoom } = UseSocket();
-  const { isChatRoom } = UseChatRoom();
+  const { createRoom } = UseChatRoom();
 
   return (
     <CenterYWrapper>

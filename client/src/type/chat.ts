@@ -1,4 +1,3 @@
-import { MutableRefObject } from "react";
 import { ClientGeometry, GeoMode } from "./three";
 
 export type UseSocketReturn = {
@@ -9,7 +8,11 @@ export type UseSocketReturn = {
   clientCubes: ClientGeometry[];
   geoMode: GeoMode;
   setGeoMode: React.Dispatch<React.SetStateAction<GeoMode>>;
-  myId: MutableRefObject<string | null>;
+  myId: string;
+  chatRoomId: string;
 };
 
-export type ChatProps = Pick<UseSocketReturn, "messages" | "sendMessage">;
+export type ChatProps = Pick<
+  UseSocketReturn,
+  "messages" | "sendMessage" | "chatRoomId"
+>;

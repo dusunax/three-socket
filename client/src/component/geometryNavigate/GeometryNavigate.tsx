@@ -11,6 +11,7 @@ export default function GeometryNavigate({
     <ol className="max-w-[240px] flex flex-wrap gap-2 fixed bottom-[430px] right-[300px] translate-y-full translate-x-full z-10">
       {GEOMETRIES.map((geometry) => (
         <ButtonItem
+          key={geometry}
           meshType={geometry}
           isActive={geometry === geoMode}
           setGeoMode={setGeoMode}

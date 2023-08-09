@@ -6,34 +6,25 @@ import Box from "./mesh/Box";
 import Dice from "./mesh/Dice";
 
 import { ThreeProps } from "@/type/three";
-import UseGuiControl from "../../hook/useGuiControl";
 
 export default function Scene({ clientCubes, geoMode, myId }: ThreeProps) {
-  // const { guiMesh } = UseGuiControl();
-
   return (
     <scene>
-      {clientCubes.map((mesh) => {
-        const isMyMesh = mesh.id === myId.current;
-        console.log(mesh.id, myId.current, isMyMesh, mesh.color);
+      {clientCubes.map((currentMesh, idx) => {
+        const { id } = currentMesh;
+        const isMyMesh = id === myId;
 
-        const currentMesh = mesh;
-        // const currentMesh = isMyMesh ? mesh : { ...mesh, ...guiMesh };
-        // const currentMesh = isMyMesh
-        //   ? mesh
-        //   : { ...mesh, position: currentPosition, rotation: currentRotation };
-
-        switch (isMyMesh ? geoMode : mesh.geometry) {
+        switch (isMyMesh ? geoMode : currentMesh.geometry) {
           case "box":
-            return <Box key={mesh.id} option={currentMesh} />;
+            return <Box key={id + idx} option={currentMesh} />;
           case "dice":
-            return <Dice key={mesh.id} option={currentMesh} />;
+            return <Dice key={id + idx} option={currentMesh} />;
           case "sphere":
-            return <Sphere key={mesh.id} option={currentMesh} />;
+            return <Sphere key={id + idx} option={currentMesh} />;
           case "torus":
-            return <Torus key={mesh.id} option={currentMesh} />;
+            return <Torus key={id + idx} option={currentMesh} />;
           default:
-            return <Fragment key={mesh.id} />;
+            return <Fragment key={id + idx} />;
         }
       })}
     </scene>

@@ -7,7 +7,6 @@ const cors = require("cors");
 app.use(cors());
 
 const http = require("http");
-const { log } = require("console");
 
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
@@ -43,7 +42,7 @@ const DEFAULT_OPTION = {
 // 새로운 클라이언트가 접속했을 때
 io.on("connection", (socket) => {
   socket.on("newCube", (newId) => {
-    clientId = newId.current;
+    clientId = newId;
     clientName = DEFAULT_GEOMETRY + colorCount;
 
     // 접속 id
@@ -102,10 +101,6 @@ io.on("connection", (socket) => {
     socket.emit("roomCreated", roomId);
 
     console.log("createRoom: ", roomName);
-  });
-
-  socket.on("hello", (data) => {
-    console.log(data);
   });
 
   socket.on("disconnect", () => {
