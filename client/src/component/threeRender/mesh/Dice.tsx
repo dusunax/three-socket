@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { Mesh, TextureLoader } from "three";
 
 import { MeshProps } from "@/type/three";
@@ -8,9 +8,15 @@ export default function Dice({ option }: MeshProps) {
   const meshRef = useRef<Mesh | null>(null);
 
   // TextureLoader를 사용하여 주사위 이미지를 로드합니다.
-  const textureLoader = new TextureLoader();
-  const diceTexture = textureLoader.load("/model/die02/diff2.png");
-  const diceTexture2 = textureLoader.load("/model/die02/normal2.png");
+  const textureLoader = useMemo(() => new TextureLoader(), []); // 메모이제이션 적용
+  const diceTexture = useMemo(
+    () => textureLoader.load("/model/die02/diff2.png"),
+    [textureLoader] // 메모이제이션 적용
+  );
+  const diceTexture2 = useMemo(
+    () => textureLoader.load("/model/die02/normal2.png"),
+    [textureLoader] // 메모이제이션 적용
+  );
 
   // diceTexture.wrapS = RepeatWrapping;
   // diceTexture.wrapT = RepeatWrapping;

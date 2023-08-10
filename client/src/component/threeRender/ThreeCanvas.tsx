@@ -1,26 +1,39 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stats } from "@react-three/drei";
 
 import UseGuiControl from "../../hook/useGuiControl";
-import { UseChatRoomProps } from "@/type/chat";
 import UseSocketRender from "../../hook/useSocketRender";
+import { UseChatRoomProps } from "@/type/chat";
 
 import Scene from "./Scene";
 import Light from "./Light";
+import Camera from "./Camera";
 
 export default function ThreeCanvas({ ...props }: UseChatRoomProps) {
-  const { myId, clientCubes } = UseSocketRender();
-  const { ambientRef } = UseGuiControl();
+  const {
+    myId,
+    clientCubes,
+    isChanging,
+    globalOrbitPosition,
+    setMyOrbitPosition,
+    setGlobalOrbitPosition,
+  } = UseSocketRender();
+  const { ambientRef, orbitControlOptions } = UseGuiControl();
   const { mode } = props;
-
   return (
     <div className="h-screen">
-      <Canvas camera={{ position: [2, 2, 1.5] }}>
+      <Canvas camera={{ position: globalOrbitPosition }}>
         <Light ambientRef={ambientRef} />
+        <Camera
+          setMyOrbitPosition={setMyOrbitPosition}
+          globalOrbitPosition={globalOrbitPosition}
+          setGlobalOrbitPosition={setGlobalOrbitPosition}
+          isChanging={isChanging}
+        />
         <Scene clientCubes={clientCubes} mode={mode} myId={myId} />
-        <OrbitControls />
 
         {/* helpers & utils */}
+        <OrbitControls {...orbitControlOptions} />
         <gridHelper args={[40, 40]} position={[0, -0.49, 0]} />
         <axesHelper args={[20]} />
         <Stats />

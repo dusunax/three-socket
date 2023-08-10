@@ -21,12 +21,13 @@ const io = require("socket.io")(server, {
 const port = 3001;
 const messages = [];
 const rooms = [];
-const existingIds = new Set(); // Use a Set to store existing ids
+const existingIds = new Set();
 
 let clientCubes = [];
 let clientId;
 let clientName;
 let colorCount = 0;
+let orbitPosition = [2, 2, 1.5];
 
 const BOX_COLORS = ["red", "green", "blue"];
 const DEFAULT_GEOMETRY = "dice";
@@ -64,13 +65,15 @@ io.on("connection", (socket) => {
     });
     colorCount++;
 
-    io.emit("idChange", clientCubes);
+    emitIdChangeEvent(clientCubes, orbitPosition);
   });
 
   // 클라이언트가 업데이트 이벤트를 보냈을 때
   socket.on("update", (data) => {
-    const { id, geometry, position, rotation } = data;
+    const { id, geometry, position, rotation, myOrbitPosition } = data;
 
+    console.log(myOrbitPosition);
+    orbitPosition = myOrbitPosition;
     // 해당 클라이언트의 정보 업데이트
     const updatedClient = clientCubes.find((cube) => cube.id === id);
 
@@ -83,7 +86,11 @@ io.on("connection", (socket) => {
     }
 
     // 모든 클라이언트에게 업데이트된 클라이언트 정보 브로드캐스팅
-    io.emit("idChange", clientCubes);
+    emitIdChangeEvent(clientCubes, orbitPosition);
+  });
+
+  socket.on("orbitPositionChange", (orbitPosition) => {
+    emitOrbitPositionChangeEvent(orbitPosition);
   });
 
   // ------------------------------
@@ -96,7 +103,7 @@ io.on("connection", (socket) => {
     console.log("메시지 목록:", messages);
 
     // 해당 방 클라이언트에게 메시지 전송
-    // io.to(roomId).emit("message", messages);
+    // socket.to(data.id).emit("message", messages);
     io.emit("message", messages);
   });
 
@@ -159,8 +166,7 @@ io.on("connection", (socket) => {
       newClientCubes
     );
 
-    clientCubes = newClientCubes;
-    io.emit("idChange", newClientCubes);
+    emitIdChangeEvent(newClientCubes, orbitPosition);
   });
 });
 
@@ -168,8 +174,20 @@ server.listen(port, () => {
   console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
 });
 
-// 방 ID로부터 해당 방의 타이틀 정보를 가져오는 함수
+/** ID로부터 해당 방의 타이틀 정보를 가져오는 함수 */
 function getRoomTitle(roomId) {
   const room = rooms.find((room) => room.id === roomId);
   return room ? room.title : "제목 없음";
+}
+
+/** */
+function emitIdChangeEvent(clientCubes) {
+  // console.log("id 업데이트", orbitPosition);
+  io.emit("idChange", { clientCubes, orbitPosition });
+}
+
+/** */
+function emitOrbitPositionChangeEvent(orbitPosition) {
+  // console.log("글로벌: " + orbitPosition);
+  io.emit("orbitPositionChange", orbitPosition);
 }
