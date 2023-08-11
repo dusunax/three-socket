@@ -23,13 +23,7 @@ export default function UseSocketRender() {
   const DEFAULT_POSITION: [number, number, number] = [2, 2, 1.5];
   const [savedOrbitPosition, saveOrbitPosition] =
     useState<[number, number, number]>(DEFAULT_POSITION);
-  const [globalOrbitPosition, setGlobalOrbitPosition] =
-    useState<[number, number, number]>(DEFAULT_POSITION);
-  let globalControlOBJ: GlobalControl = {
-    orbitPosition: [2, 2, 1.5],
-    hostId: "",
-    isChanging: false,
-  };
+  const [globalControl, setGlobalControl] = useState<GlobalControl>();
 
   let myMesh = useRef<ClientGeometry | null>(null);
 
@@ -53,14 +47,12 @@ export default function UseSocketRender() {
     });
 
     socket.on("globalOrbitChange", (globalControl) => {
-      // console.log(
-      //   "글로벌 변경 감지:",
-      //   globalControl
-      // );
-      globalControlOBJ = globalControl;
+      console.log("글로벌 변경 감지:", globalControl);
+      setGlobalControl(globalControl);
 
       const newIsMyControl = globalControl.hostId === socket.id;
       setIsMyControl(newIsMyControl);
+      console.log("isMyControl", newIsMyControl);
     });
   }, []);
 
@@ -96,12 +88,14 @@ export default function UseSocketRender() {
   }, [location.search, params]);
 
   useEffect(() => {
+    // if (!globalControl) return;
+
     // 클라이언트의 myOrbitPositio 값이 변경될 때 서버로 전송
-    const isSamePosition = checkTwo3DCoordinateEqual(
-      savedOrbitPosition,
-      globalControlOBJ.orbitPosition
-    );
-    if (isSamePosition) return console.log("같은 값이라 전송 안함");
+    // const isSamePosition = checkTwo3DCoordinateEqual(
+    //   savedOrbitPosition,
+    //   globalControl?.orbitPosition
+    // );
+    // if (isSamePosition) return console.log("같은 값이라 전송 안함");
 
     let myControl = {
       orbitPosition: savedOrbitPosition,
@@ -122,9 +116,7 @@ export default function UseSocketRender() {
     initializeCube,
     savedOrbitPosition,
     saveOrbitPosition,
-    globalOrbitPosition,
-    setGlobalOrbitPosition,
-    globalControlOBJ,
+    globalControl,
     isMyControl,
   };
 }

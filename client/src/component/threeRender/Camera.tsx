@@ -8,56 +8,38 @@ import { GlobalControl } from "@/type/three";
 
 export default function Camera({
   saveOrbitPosition: setMyOrbitPosition,
-  globalOrbitPosition,
-  isChanging,
-  setGlobalOrbitPosition,
-  globalControlOBJ,
   savedOrbitPosition,
+  isChanging,
   isMyControl,
+  globalControl,
 }: {
   saveOrbitPosition: React.Dispatch<
     React.SetStateAction<[number, number, number]>
   >;
-  globalOrbitPosition: [number, number, number];
-  isChanging: boolean;
-  setGlobalOrbitPosition: React.Dispatch<
-    React.SetStateAction<[number, number, number]>
-  >;
   savedOrbitPosition: [number, number, number];
-  globalControlOBJ: GlobalControl;
+  isChanging: boolean;
   isMyControl: boolean;
+  globalControl: GlobalControl | undefined;
 }) {
   useFrame(({ camera }) => {
     const newMyPosition = camera.position.toArray();
 
-    if (!isMyControl) {
-      console.log("다른 사람이 호스트");
-      // const isGlobalSinc = checkTwo3DCoordinateEqual(
-      //   newMyPosition,
-      //   globalControlOBJ.orbitPosition
-      // );
+    if (!isMyControl && globalControl?.orbitPosition) {
+      // console.log("다른 사람이 호스트");
+      const isGlobalSinc = checkTwo3DCoordinateEqual(
+        newMyPosition,
+        globalControl.orbitPosition
+      );
 
-      // camera.position.set(...globalControlOBJ.orbitPosition);
+      !isGlobalSinc && camera.position.set(...globalControl.orbitPosition);
     }
 
-    // setMyOrbitPosition(newMyPosition);
-
-    // console.log(isMyControl, isGlobalSinc);
-    // if (!isMyControl && !isGlobalSinc) {
-    //   console.log(isGlobalSinc);
-
-    //   // setTimeout(() => {
-    //   //   camera.position.set(...globalControlOBJ.orbitPosition);
-    //   // }, 100);
-    // } else {
-    //   // console.log("my control");
-    // }
     const isViewStill = checkTwo3DCoordinateEqual(
       newMyPosition,
       savedOrbitPosition
     );
     !isViewStill && setMyOrbitPosition(roundCoordinate(newMyPosition));
-    // console.log("나야나", isViewStill);
+    // console.log("나야나", isMyControl, "카메라", globalControl?.orbitPosition);
   });
 
   return null;

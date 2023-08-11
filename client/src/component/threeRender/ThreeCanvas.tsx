@@ -14,26 +14,22 @@ export default function ThreeCanvas({ ...props }: UseChatRoomProps) {
     myId,
     clientCubes,
     isChanging,
-    globalOrbitPosition,
+    globalControl,
     saveOrbitPosition,
-    setGlobalOrbitPosition,
     savedOrbitPosition,
-    globalControlOBJ,
     isMyControl,
   } = UseSocketRender();
   const { ambientRef, orbitControlOptions } = UseGuiControl();
   const { mode } = props;
   return (
     <div className="h-screen">
-      <Canvas camera={{ position: globalOrbitPosition }}>
+      <Canvas>
         <Light ambientRef={ambientRef} />
         <Camera
           savedOrbitPosition={savedOrbitPosition}
           saveOrbitPosition={saveOrbitPosition}
-          globalOrbitPosition={globalOrbitPosition}
-          setGlobalOrbitPosition={setGlobalOrbitPosition}
+          globalControl={globalControl}
           isChanging={isChanging}
-          globalControlOBJ={globalControlOBJ}
           isMyControl={isMyControl}
         />
         <Scene clientCubes={clientCubes} mode={mode} myId={myId} />
