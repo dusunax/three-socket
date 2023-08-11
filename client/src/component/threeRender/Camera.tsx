@@ -38,7 +38,12 @@ export default function Camera({
       newMyPosition,
       savedOrbitPosition
     );
-    !isViewStill && setMyOrbitPosition(roundCoordinate(newMyPosition));
+
+    //
+
+    !globalControl?.isChanging &&
+      !isViewStill &&
+      setMyOrbitPosition(roundCoordinate(newMyPosition));
     // console.log("나야나", isMyControl, "카메라", globalControl?.orbitPosition);
   });
 

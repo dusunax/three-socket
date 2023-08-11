@@ -1,9 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import * as THREE from "three";
 
 import { ClientGeometry, GlobalControl } from "../type/three";
-import { checkTwo3DCoordinateEqual } from "../util/checkTwoVecter3";
 
 import io from "socket.io-client";
 const socket = io("http://localhost:3001");
@@ -37,9 +35,10 @@ export default function UseSocketRender() {
 
     if (!socket.id) return;
 
-    socket.on("cubeChange", (data) => {
-      const { clientCubes } = data;
+    socket.on("updateServerData", (data) => {
+      const { clientCubes, globalControl } = data;
       setClientCubes(clientCubes);
+      setGlobalControl(globalControl);
 
       myMesh.current = clientCubes.find(
         (cube: ClientGeometry) => cube.id === socket.id
@@ -52,7 +51,6 @@ export default function UseSocketRender() {
 
       const newIsMyControl = globalControl.hostId === socket.id;
       setIsMyControl(newIsMyControl);
-      console.log("isMyControl", newIsMyControl);
     });
   }, []);
 
@@ -64,7 +62,7 @@ export default function UseSocketRender() {
 
     function updateCurrentClientObject() {
       if (myMesh.current) {
-        socket.emit("cubeUpdate", {
+        socket.emit("updateInterval", {
           id: socket.id,
           geometry: mode,
           position: myMesh.current.position,
@@ -77,7 +75,7 @@ export default function UseSocketRender() {
       clearInterval(updateInterval);
       updateInterval = setInterval(() => {
         updateCurrentClientObject();
-      }, 500);
+      }, 300);
     }
 
     resetUpdateInterval();
@@ -85,25 +83,13 @@ export default function UseSocketRender() {
     return () => {
       clearInterval(updateInterval);
     };
-  }, [location.search, params]);
+  }, [location.search, params, savedOrbitPosition]);
 
   useEffect(() => {
-    // if (!globalControl) return;
-
-    // 클라이언트의 myOrbitPositio 값이 변경될 때 서버로 전송
-    // const isSamePosition = checkTwo3DCoordinateEqual(
-    //   savedOrbitPosition,
-    //   globalControl?.orbitPosition
-    // );
-    // if (isSamePosition) return console.log("같은 값이라 전송 안함");
-
     let myControl = {
       orbitPosition: savedOrbitPosition,
       hostId: socket.id,
-      isChanging: true,
     };
-
-    console.log(myControl);
 
     socket.emit("orbitPositionChange", myControl);
   }, [savedOrbitPosition]);

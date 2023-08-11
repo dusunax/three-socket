@@ -7,7 +7,6 @@ import UseChatRoom from "../hook/useChatRoom";
 export default function RoomPage() {
   const props = { ...UseChatRoom() };
   const { isChatRoom, mode, setMode } = props;
-
   return (
     <>
       <ThreeCanvas {...props} />
