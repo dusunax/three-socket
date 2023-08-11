@@ -15,8 +15,11 @@ export default function ThreeCanvas({ ...props }: UseChatRoomProps) {
     clientCubes,
     isChanging,
     globalOrbitPosition,
-    setMyOrbitPosition,
+    saveOrbitPosition,
     setGlobalOrbitPosition,
+    savedOrbitPosition,
+    globalControlOBJ,
+    isMyControl,
   } = UseSocketRender();
   const { ambientRef, orbitControlOptions } = UseGuiControl();
   const { mode } = props;
@@ -25,10 +28,13 @@ export default function ThreeCanvas({ ...props }: UseChatRoomProps) {
       <Canvas camera={{ position: globalOrbitPosition }}>
         <Light ambientRef={ambientRef} />
         <Camera
-          setMyOrbitPosition={setMyOrbitPosition}
+          savedOrbitPosition={savedOrbitPosition}
+          saveOrbitPosition={saveOrbitPosition}
           globalOrbitPosition={globalOrbitPosition}
           setGlobalOrbitPosition={setGlobalOrbitPosition}
           isChanging={isChanging}
+          globalControlOBJ={globalControlOBJ}
+          isMyControl={isMyControl}
         />
         <Scene clientCubes={clientCubes} mode={mode} myId={myId} />
 

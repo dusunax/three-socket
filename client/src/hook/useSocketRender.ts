@@ -2,7 +2,8 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import * as THREE from "three";
 
-import { ClientGeometry } from "../type/three";
+import { ClientGeometry, GlobalControl } from "../type/three";
+import { checkTwo3DCoordinateEqual } from "../util/checkTwoVecter3";
 
 import io from "socket.io-client";
 const socket = io("http://localhost:3001");
@@ -17,13 +18,18 @@ export default function UseSocketRender() {
   const location = useLocation();
   const [clientCubes, setClientCubes] = useState<ClientGeometry[]>([]);
   const [isChanging, setIsChanging] = useState(false);
+  const [isMyControl, setIsMyControl] = useState(false);
 
   const DEFAULT_POSITION: [number, number, number] = [2, 2, 1.5];
-  const [myOrbitPosition, setMyOrbitPosition] =
+  const [savedOrbitPosition, saveOrbitPosition] =
     useState<[number, number, number]>(DEFAULT_POSITION);
   const [globalOrbitPosition, setGlobalOrbitPosition] =
     useState<[number, number, number]>(DEFAULT_POSITION);
-  // const globalOrbitPosition = useRef<[number, number, number]>([2, 2, 1.5]);
+  let globalControlOBJ: GlobalControl = {
+    orbitPosition: [2, 2, 1.5],
+    hostId: "",
+    isChanging: false,
+  };
 
   let myMesh = useRef<ClientGeometry | null>(null);
 
@@ -37,10 +43,8 @@ export default function UseSocketRender() {
 
     if (!socket.id) return;
 
-    socket.on("idChange", (data) => {
-      const { orbitPosition, clientCubes } = data;
-
-      setGlobalOrbitPosition(orbitPosition);
+    socket.on("cubeChange", (data) => {
+      const { clientCubes } = data;
       setClientCubes(clientCubes);
 
       myMesh.current = clientCubes.find(
@@ -48,10 +52,15 @@ export default function UseSocketRender() {
       );
     });
 
-    socket.on("orbitPositionChange", (serverOrbitPosition) => {
-      // console.log("글로벌 변경 감지:", serverOrbitPosition);
-      setIsChanging(true);
-      setGlobalOrbitPosition(serverOrbitPosition);
+    socket.on("globalOrbitChange", (globalControl) => {
+      // console.log(
+      //   "글로벌 변경 감지:",
+      //   globalControl
+      // );
+      globalControlOBJ = globalControl;
+
+      const newIsMyControl = globalControl.hostId === socket.id;
+      setIsMyControl(newIsMyControl);
     });
   }, []);
 
@@ -59,15 +68,15 @@ export default function UseSocketRender() {
     let updateInterval: NodeJS.Timeout;
 
     const mode = params.get("mode") || "dice";
+    console.log("updateInterval");
 
     function updateCurrentClientObject() {
       if (myMesh.current) {
-        socket.emit("update", {
+        socket.emit("cubeUpdate", {
           id: socket.id,
           geometry: mode,
           position: myMesh.current.position,
           rotation: myMesh.current.rotation,
-          myOrbitPosition: myOrbitPosition,
         });
       }
     }
@@ -84,29 +93,26 @@ export default function UseSocketRender() {
     return () => {
       clearInterval(updateInterval);
     };
-  }, [location.search, myOrbitPosition, params]);
+  }, [location.search, params]);
 
   useEffect(() => {
     // 클라이언트의 myOrbitPositio 값이 변경될 때 서버로 전송
-    const [x, y, z] = myOrbitPosition;
-    const [gx, gy, gz] = globalOrbitPosition;
-    const positions = {
-      my: [+x.toFixed(1), +y.toFixed(1), +z.toFixed(1)],
-      global: [+gx.toFixed(1), +gy.toFixed(1), +gz.toFixed(1)],
+    const isSamePosition = checkTwo3DCoordinateEqual(
+      savedOrbitPosition,
+      globalControlOBJ.orbitPosition
+    );
+    if (isSamePosition) return console.log("같은 값이라 전송 안함");
+
+    let myControl = {
+      orbitPosition: savedOrbitPosition,
+      hostId: socket.id,
+      isChanging: true,
     };
 
-    if (
-      positions.my[0] !== positions.global[0] ||
-      positions.my[1] !== positions.global[1] ||
-      positions.my[2] !== positions.global[2]
-    ) {
-      console.log("업데이트", positions.my, positions.global);
+    console.log(myControl);
 
-      socket.emit("orbitPositionChange", positions.my);
-    } else {
-      setIsChanging(false);
-    }
-  }, [myOrbitPosition, globalOrbitPosition]);
+    socket.emit("orbitPositionChange", myControl);
+  }, [savedOrbitPosition]);
 
   return {
     myId: socket.id,
@@ -114,9 +120,11 @@ export default function UseSocketRender() {
     isChanging,
 
     initializeCube,
-    myOrbitPosition,
-    setMyOrbitPosition,
+    savedOrbitPosition,
+    saveOrbitPosition,
     globalOrbitPosition,
     setGlobalOrbitPosition,
+    globalControlOBJ,
+    isMyControl,
   };
 }

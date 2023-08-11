@@ -27,7 +27,11 @@ let clientCubes = [];
 let clientId;
 let clientName;
 let colorCount = 0;
-let orbitPosition = [2, 2, 1.5];
+let globalControl = {
+  orbitPosition: [2, 2, 1.5],
+  hostId: "",
+  isChanging: false,
+};
 
 const BOX_COLORS = ["red", "green", "blue"];
 const DEFAULT_GEOMETRY = "dice";
@@ -65,15 +69,13 @@ io.on("connection", (socket) => {
     });
     colorCount++;
 
-    emitIdChangeEvent(clientCubes, orbitPosition);
+    emitCubeChangeEvent(clientCubes);
   });
 
   // 클라이언트가 업데이트 이벤트를 보냈을 때
-  socket.on("update", (data) => {
-    const { id, geometry, position, rotation, myOrbitPosition } = data;
+  socket.on("cubeUpdate", (data) => {
+    const { id, geometry, position, rotation } = data;
 
-    console.log(myOrbitPosition);
-    orbitPosition = myOrbitPosition;
     // 해당 클라이언트의 정보 업데이트
     const updatedClient = clientCubes.find((cube) => cube.id === id);
 
@@ -86,11 +88,11 @@ io.on("connection", (socket) => {
     }
 
     // 모든 클라이언트에게 업데이트된 클라이언트 정보 브로드캐스팅
-    emitIdChangeEvent(clientCubes, orbitPosition);
+    emitCubeChangeEvent(clientCubes);
   });
 
-  socket.on("orbitPositionChange", (orbitPosition) => {
-    emitOrbitPositionChangeEvent(orbitPosition);
+  socket.on("orbitPositionChange", (clientControl) => {
+    emitOrbitPositionChangeEvent(clientControl);
   });
 
   // ------------------------------
@@ -166,7 +168,7 @@ io.on("connection", (socket) => {
       newClientCubes
     );
 
-    emitIdChangeEvent(newClientCubes, orbitPosition);
+    emitCubeChangeEvent(newClientCubes);
   });
 });
 
@@ -180,14 +182,26 @@ function getRoomTitle(roomId) {
   return room ? room.title : "제목 없음";
 }
 
-/** */
-function emitIdChangeEvent(clientCubes) {
-  // console.log("id 업데이트", orbitPosition);
-  io.emit("idChange", { clientCubes, orbitPosition });
+// ------------------------------
+// 이벤트 핸들러
+// ------------------------------
+/** 3D Object 변화 */
+function emitCubeChangeEvent(clientCubes) {
+  io.emit("cubeChange", { clientCubes });
 }
 
-/** */
-function emitOrbitPositionChangeEvent(orbitPosition) {
-  // console.log("글로벌: " + orbitPosition);
-  io.emit("orbitPositionChange", orbitPosition);
+/** 카메라 위치 변화 */
+function emitOrbitPositionChangeEvent(newControl) {
+  globalControl = newControl;
+  console.log("글로벌: ", globalControl);
+  io.emit("globalOrbitChange", newControl);
 }
+
+/** 두 3D 좌표값이 같은지 확인하는 함수 */
+const checkTwo3DCoordinateEqual = (c1, c2) => {
+  return (
+    c1[0].toFixed(1) === c2[0].toFixed(1) ||
+    c1[1].toFixed(1) === c2[1].toFixed(1) ||
+    c1[2].toFixed(1) === c2[2].toFixed(1)
+  );
+};

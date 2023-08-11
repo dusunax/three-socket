@@ -20,3 +20,11 @@ export interface ClientGeometry {
 }
 
 export type ClientGeometryList = ClientGeometry[];
+
+export interface GlobalControl {
+  orbitPosition: [number, number, number];
+  hostId: string;
+  isChanging: boolean;
+  // orbitTarget: [number, number, number];
+  // zoom: number;
+}
