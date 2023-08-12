@@ -100,7 +100,7 @@ export default function UseSocketRender() {
       positions.my[1] !== positions.global[1] ||
       positions.my[2] !== positions.global[2]
     ) {
-      console.log("업데이트", positions.my, positions.global);
+      console.log("업데이트: ", positions.my, positions.global);
 
       socket.emit("orbitPositionChange", positions.my);
     } else {

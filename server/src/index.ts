@@ -1,15 +1,11 @@
-const { v4: uuidv4 } = require("uuid");
+import { v4 as uuidv4 } from "uuid";
+import express, { Application, Request, Response } from "express";
+import http from "http";
+import { Server, Socket } from "socket.io";
 
-const express = require("express");
-const app = express();
-
-const cors = require("cors");
-app.use(cors());
-
-const http = require("http");
-
-const server = http.createServer(app);
-const io = require("socket.io")(server, {
+const app: Application = express();
+const server: http.Server = http.createServer(app);
+const io: Server = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
@@ -18,49 +14,79 @@ const io = require("socket.io")(server, {
   },
 });
 
-const port = 3001;
-const messages = [];
-const rooms = [];
-const existingIds = new Set();
+interface Message {
+  message: string;
+  nickname: string;
+  time: string;
+  roomId: string;
+}
 
-let clientCubes = [];
-let clientId;
-let clientName;
+interface Room {
+  id: string;
+  title: string;
+  nickname: string;
+}
+
+interface ClientCube {
+  geometry: string;
+  id: string;
+  name: string;
+  position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  rotation: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  visible: boolean;
+  color: string;
+}
+
+interface Client {
+  id: string | undefined;
+  name: string | undefined;
+}
+
+const PORT = 3001;
+const messages: Message[] = [];
+const rooms = new Map<string, Room>();
+const existingIdSet = new Set<string>();
+
+let clientCubes: ClientCube[] = [];
+let client: Client = {
+  id: undefined,
+  name: undefined,
+};
 let colorCount = 0;
 let orbitPosition = [2, 2, 1.5];
 
-const BOX_COLORS = ["red", "green", "blue"];
-const DEFAULT_GEOMETRY = "dice";
-const DEFAULT_OPTION = {
-  geometry: DEFAULT_GEOMETRY,
-  id: "",
-  name: "",
-  position: { x: 0, y: 0, z: 0 },
-  rotation: { x: 0, y: 0, z: 0 },
-  visible: true,
-  color: "",
-};
-
 // 새로운 클라이언트가 접속했을 때
 io.on("connection", (socket) => {
+  client = {
+    id: socket.id,
+    name: DEFAULT_GEOMETRY + colorCount,
+  };
+
   // ------------------------------
   // 새 3d Object 생성 & 업데이트
   socket.on("newCube", (newId) => {
-    clientId = newId;
-    clientName = DEFAULT_GEOMETRY + colorCount;
+    const cubeId = uuidv4();
 
     // 접속 id
-    console.log("connect newCube: ", clientId);
+    console.log("connect newCube: ", newId);
 
-    existingIds.add(clientId);
+    existingIdSet.add(newId);
     const length = clientCubes.length;
 
     clientCubes.unshift({
       ...DEFAULT_OPTION,
       position: { ...DEFAULT_OPTION.position, y: length },
       rotation: { ...DEFAULT_OPTION.rotation, y: length % 2 },
-      id: clientId,
-      name: clientName,
+      id: cubeId,
+      name: DEFAULT_GEOMETRY,
       color: BOX_COLORS[colorCount % BOX_COLORS.length],
     });
     colorCount++;
@@ -77,9 +103,10 @@ io.on("connection", (socket) => {
     // 해당 클라이언트의 정보 업데이트
     const updatedClient = clientCubes.find((cube) => cube.id === id);
 
-    if (updatedClient) {
-      clientName = geometry + colorCount;
-      updatedClient.name = clientName;
+    if (updatedClient && geometry.name) {
+      client.name = geometry.name;
+
+      updatedClient.name = geometry.name;
       updatedClient.geometry = geometry;
       updatedClient.position = position;
       updatedClient.rotation = rotation;
@@ -99,7 +126,7 @@ io.on("connection", (socket) => {
   socket.on("message", (data) => {
     console.log("클라이언트가 메시지를 보냈습니다:", data);
 
-    messages.push({ ...data, nickname: clientName });
+    messages.push({ ...data, nickname: client.name });
     console.log("메시지 목록:", messages);
 
     // 해당 방 클라이언트에게 메시지 전송
@@ -119,7 +146,7 @@ io.on("connection", (socket) => {
       title: title,
       nickname: nickname,
     };
-    rooms.push(room);
+    rooms.set(roomId, room);
 
     console.log("새로운 방이 생성되었습니다. ID:", roomId);
     socket.emit("roomCreated", room);
@@ -138,7 +165,7 @@ io.on("connection", (socket) => {
     const roomInfo = {
       roomId,
       title: getRoomTitle(roomId), // 해당 방의 타이틀 정보를 가져옵니다.
-      clients: Array.from(io.sockets.adapter.rooms.get(roomId)),
+      clients: Array.from(io.sockets.adapter.rooms.get(roomId) || []),
     };
     socket.emit("roomJoined", roomInfo);
   });
@@ -150,7 +177,7 @@ io.on("connection", (socket) => {
   // 연결 종료
   // 클라이언트가 연결을 해제했을 때
   socket.on("disconnect", () => {
-    existingIds.delete(clientId);
+    client.id && existingIdSet.delete(client.id);
     const newClientCubes = clientCubes
       .filter((cube) => cube.id !== socket.id)
       .reverse()
@@ -170,24 +197,23 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(port, () => {
-  console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
+server.listen(PORT, () => {
+  console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
 
 /** ID로부터 해당 방의 타이틀 정보를 가져오는 함수 */
-function getRoomTitle(roomId) {
-  const room = rooms.find((room) => room.id === roomId);
+function getRoomTitle(roomId: string) {
+  const room = Array.from(rooms.values()).find((room) => room.id === roomId);
   return room ? room.title : "제목 없음";
 }
 
 /** */
-function emitIdChangeEvent(clientCubes) {
-  // console.log("id 업데이트", orbitPosition);
+function emitIdChangeEvent(clientCubes: ClientCube[], orbitPosition: number[]) {
   io.emit("idChange", { clientCubes, orbitPosition });
 }
 
 /** */
-function emitOrbitPositionChangeEvent(orbitPosition) {
-  // console.log("글로벌: " + orbitPosition);
+function emitOrbitPositionChangeEvent(orbitPosition: number[]) {
+  console.log("글로벌: ", orbitPosition);
   io.emit("orbitPositionChange", orbitPosition);
 }
