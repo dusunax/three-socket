@@ -25,7 +25,11 @@ let client: Client = {
   name: undefined,
 };
 let colorCount = 0;
-let orbitPosition = [2, 2, 1.5];
+let globalControl: GlobalControl = {
+  orbitPosition: [2, 2, 1.5],
+  hostId: "",
+  isChanging: false,
+};
 
 // 새로운 클라이언트가 접속했을 때
 io.on("connection", (socket) => {
@@ -55,15 +59,15 @@ io.on("connection", (socket) => {
     });
     colorCount++;
 
-    emitIdChangeEvent(clientCubes, orbitPosition);
+    emitUpdateIntervalEvent(clientCubes, globalControl);
   });
 
   // 클라이언트가 업데이트 이벤트를 보냈을 때
-  socket.on("update", (data) => {
-    const { id, geometry, position, rotation, myOrbitPosition } = data;
+  socket.on("updateInterval", (data) => {
+    const { id, geometry, position, rotation } = data;
+    // console.log("서버 업데이트 인터벌 >>>>>>>>>>", globalControl);
+    globalControl.isChanging = false;
 
-    console.log(myOrbitPosition);
-    orbitPosition = myOrbitPosition;
     // 해당 클라이언트의 정보 업데이트
     const updatedClient = clientCubes.find((cube) => cube.id === id);
 
@@ -77,11 +81,18 @@ io.on("connection", (socket) => {
     }
 
     // 모든 클라이언트에게 업데이트된 클라이언트 정보 브로드캐스팅
-    emitIdChangeEvent(clientCubes, orbitPosition);
+    emitUpdateIntervalEvent(clientCubes, globalControl);
   });
 
-  socket.on("orbitPositionChange", (orbitPosition) => {
-    emitOrbitPositionChangeEvent(orbitPosition);
+  socket.on("orbitPositionChange", (clientControl) => {
+    console.log(globalControl.isChanging);
+    if (globalControl.isChanging && clientControl.hostId !== client.id) return;
+
+    clientControl.isChanging = true;
+    globalControl = clientControl;
+
+    console.log("글로벌: ", clientControl);
+    emitOrbitPositionChangeEvent(clientControl);
   });
 
   // ------------------------------
@@ -157,7 +168,7 @@ io.on("connection", (socket) => {
       newClientCubes
     );
 
-    emitIdChangeEvent(newClientCubes, orbitPosition);
+    emitUpdateIntervalEvent(newClientCubes, globalControl);
   });
 });
 
@@ -171,13 +182,18 @@ function getRoomTitle(roomId: string) {
   return room ? room.title : "제목 없음";
 }
 
-/** */
-function emitIdChangeEvent(clientCubes: ClientCube[], orbitPosition: number[]) {
-  io.emit("idChange", { clientCubes, orbitPosition });
+// ------------------------------
+// 이벤트 핸들러
+// ------------------------------
+/** 인터벌로 값 업데이트 */
+function emitUpdateIntervalEvent(
+  clientCubes: ClientCube[],
+  globalControl: GlobalControl
+) {
+  io.emit("updateServerData", { clientCubes, globalControl });
 }
 
-/** */
-function emitOrbitPositionChangeEvent(orbitPosition: number[]) {
-  console.log("글로벌: ", orbitPosition);
-  io.emit("orbitPositionChange", orbitPosition);
+/** 카메라 위치 변화 */
+function emitOrbitPositionChangeEvent(newControl: GlobalControl) {
+  io.emit("globalOrbitChange", newControl);
 }

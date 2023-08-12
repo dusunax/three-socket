@@ -33,3 +33,9 @@ interface Client {
   id: string | undefined;
   name: string | undefined;
 }
+
+interface GlobalControl {
+  orbitPosition: number[];
+  hostId: string;
+  isChanging: boolean;
+}
